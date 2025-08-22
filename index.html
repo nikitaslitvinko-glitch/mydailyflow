@@ -1,1 +1,186 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>mydailyflow</title>
+  <meta name="theme-color" content="#0f172a">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">mydailyflow</div>
+    <div class="spacer"></div>
+    <button id="installBtn" hidden>Installieren</button>
+    <button id="loginBtn">Login</button>
+  </header>
 
+  <main>
+    <!-- HOME -->
+    <section id="view-home" class="view">
+      <h1>Willkommen<span id="greetName"></span> 👋</h1>
+      <p class="muted">All‑in‑One: Agenda, ToDos, Ziele & Finanzen</p>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Heute</h2>
+          <div class="metric">
+            <div>
+              <div class="metric-label">Offene Aufgaben</div>
+              <div class="metric-value" id="statTodos">0</div>
+            </div>
+            <div>
+              <div class="metric-label">Aktive Ziele</div>
+              <div class="metric-value" id="statGoals">0</div>
+            </div>
+            <div>
+              <div class="metric-label">Monatsbilanz</div>
+              <div class="metric-value" id="statBalance">0 €</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Schnell hinzufügen</h2>
+          <form id="quickTodoForm" class="row">
+            <input id="quickTodoInput" placeholder="Neue ToDo ..." autocomplete="off" />
+            <button>+ Hinzufügen</button>
+          </form>
+          <ul id="quickTodoList" class="list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEED -->
+    <section id="view-feed" class="view hidden">
+      <h1>Feed</h1>
+      <p class="muted">Mini‑Updates, nur lokal gespeichert.</p>
+      <form id="postForm" class="col">
+        <textarea id="postText" rows="3" placeholder="Was gibt's Neues?"></textarea>
+        <button>Posten</button>
+      </form>
+      <div id="postList" class="list"></div>
+    </section>
+
+    <!-- ZIELE -->
+    <section id="view-ziele" class="view hidden">
+      <h1>Ziele</h1>
+      <form id="goalForm" class="row responsive">
+        <input id="goalName" placeholder="Ziel (z. B. Notgroschen 5.000 €)" />
+        <input id="goalTarget" type="number" step="0.01" placeholder="Zielbetrag (€)" />
+        <input id="goalDate" type="date" />
+        <button>+ Ziel</button>
+      </form>
+      <div id="goalList" class="list"></div>
+    </section>
+
+    <!-- HAUSHALT -->
+    <section id="view-haushalt" class="view hidden">
+      <h1>Haushalt</h1>
+      <form id="txnForm" class="row responsive">
+        <select id="txnType">
+          <option value="income">Einnahme</option>
+          <option value="expense">Ausgabe</option>
+        </select>
+        <input id="txnCat" placeholder="Kategorie (z. B. Miete, Gehalt)" />
+        <input id="txnAmt" type="number" step="0.01" placeholder="Betrag (€)" />
+        <input id="txnNote" placeholder="Notiz" />
+        <input id="txnDate" type="date" />
+        <button>+ Speichern</button>
+      </form>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Übersicht (Monat)</h2>
+          <div class="metric">
+            <div>
+              <div class="metric-label">Einnahmen</div>
+              <div class="metric-value" id="sumIncome">0 €</div>
+            </div>
+            <div>
+              <div class="metric-label">Ausgaben</div>
+              <div class="metric-value" id="sumExpense">0 €</div>
+            </div>
+            <div>
+              <div class="metric-label">Bilanz</div>
+              <div class="metric-value" id="sumBalance">0 €</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Transaktionen</h2>
+          <div class="row">
+            <input id="filterMonth" type="month" />
+            <button id="clearTxns" type="button">Alles löschen</button>
+            <button id="exportCSV" type="button">CSV exportieren</button>
+          </div>
+          <div class="table" id="txnTable"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFIL -->
+    <section id="view-profil" class="view hidden">
+      <h1>Profil</h1>
+      <form id="profileForm" class="col">
+        <input id="profileName" placeholder="Dein Name" />
+        <input id="profileEmail" type="email" placeholder="E‑Mail" />
+        <button>Speichern</button>
+      </form>
+
+      <div class="card">
+        <h2>Daten & Backup</h2>
+        <div class="row wrap">
+          <button id="exportJSON">Daten exportieren (JSON)</button>
+          <label class="file">
+            <input id="importJSON" type="file" accept="application/json" hidden />
+            <span>JSON importieren</span>
+          </label>
+          <button id="wipeAll">Alles zurücksetzen</button>
+        </div>
+        <p class="muted">Alle Daten liegen lokal im Browser (localStorage).</p>
+      </div>
+
+      <div class="card">
+        <h2>Darstellung</h2>
+        <div class="row">
+          <button id="toggleTheme">Dark/Light umschalten</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottombar">
+    <a href="#home" data-tab="home">Home</a>
+    <a href="#feed" data-tab="feed">Feed</a>
+    <a href="#ziele" data-tab="ziele">Ziele</a>
+    <a href="#haushalt" data-tab="haushalt">Haushalt</a>
+    <a href="#profil" data-tab="profil">Profil</a>
+  </nav>
+
+  <!-- Login Modal -->
+  <dialog id="loginModal">
+    <form id="loginForm" method="dialog" class="col">
+      <h2>Login (Demo)</h2>
+      <input id="loginName" placeholder="Name" />
+      <input id="loginEmail" type="email" placeholder="E‑Mail" />
+      <menu>
+        <button value="cancel">Abbrechen</button>
+        <button id="loginSubmit" value="default">Login</button>
+      </menu>
+      <p class="muted">Nur lokal – kein Server, kein Passwort.</p>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js');
+      });
+    }
+  </script>
+</body>
+</html>
